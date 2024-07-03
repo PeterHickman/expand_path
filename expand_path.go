@@ -3,6 +3,7 @@ package expand_path
 import (
 	"os"
 	"os/user"
+	"path/filepath"
 	"strings"
 )
 
@@ -14,24 +15,6 @@ func getUser(name string) (string, int) {
 	} else {
 		return name[1:i], i
 	}
-}
-
-func normalisePath(path string) string {
-	parts := strings.Split(path, "/")
-	normalised := []string{}
-
-	for _, part := range parts {
-		if part == "." {
-			// Do nothing
-		} else if part == ".." {
-			// Drop current head
-			normalised = normalised[:len(normalised)-1]
-		} else {
-			normalised = append(normalised, part)
-		}
-	}
-
-	return strings.Join(normalised, "/")
 }
 
 func ExpandPath(path string) (string, error) {
@@ -67,7 +50,7 @@ func ExpandPath(path string) (string, error) {
 		newPath = pwd + "/" + newPath
 	}
 
-	newPath = normalisePath(newPath)
+	newPath = filepath.Clean(newPath)
 
 	return newPath, nil
 }
